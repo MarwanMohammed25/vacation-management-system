@@ -50,8 +50,8 @@
     },
     "publish": {
       "provider": "github",
-      "owner": "tameer-facility",
-      "repo": "vacation-management",
+      "owner": "MarwanMohammed25",
+      "repo": "vacation-management-system",
       "releaseType": "release"
     },
     "win": {
