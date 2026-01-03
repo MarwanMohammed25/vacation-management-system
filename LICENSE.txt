@@ -1,0 +1,86 @@
+اتفاقية ترخيص استخدام البرنامج
+===============================
+
+شركة التعمير لإدارة المرافق
+TAMEER Facility Management
+www.tameer.com
+
+اتفاقية ترخيص المستخدم النهائي (EULA)
+=====================================
+
+يُرجى قراءة هذه الاتفاقية بعناية قبل تثبيت أو استخدام منظومة إدارة الإجازات.
+
+1. منح الترخيص
+   تمنح شركة التعمير للمستخدم ترخيصاً غير حصري لاستخدام هذا البرنامج.
+
+2. حقوق الملكية الفكرية
+   جميع الحقوق محفوظة © 2025 لشركة التعمير لإدارة المرافق.
+   هذا البرنامج محمي بموجب قوانين حقوق الطبع والنشر الدولية.
+
+3. القيود
+   - يُحظر نسخ أو توزيع البرنامج دون إذن كتابي من الشركة
+   - يُحظر إجراء هندسة عكسية أو فك تجميع للبرنامج
+   - يُحظر تأجير أو إعارة البرنامج لأطراف ثالثة
+
+4. إخلاء المسؤولية
+   يتم توفير هذا البرنامج "كما هو" دون أي ضمانات صريحة أو ضمنية.
+   لا تتحمل الشركة أي مسؤولية عن أي أضرار مباشرة أو غير مباشرة.
+
+5. الدعم الفني
+   تقدم الشركة الدعم الفني عبر:
+   البريد الإلكتروني: support@tameer.com
+   الموقع الإلكتروني: www.tameer.com
+
+6. إنهاء الترخيص
+   تحتفظ الشركة بالحق في إنهاء هذا الترخيص في حالة انتهاك أي بند من بنود هذه الاتفاقية.
+
+7. القانون الواجب التطبيق
+   تخضع هذه الاتفاقية للقوانين المعمول بها في المملكة العربية السعودية.
+
+---
+
+بالنقر على "أوافق" أو بتثبيت البرنامج، فإنك تقر بأنك قرأت وفهمت وتوافق على الالتزام بشروط وأحكام هذه الاتفاقية.
+
+شركة التعمير لإدارة المرافق
+تاريخ النفاذ: 2025
+الإصدار: 2.0.0
+
+---
+
+TAMEER Facility Management - End User License Agreement (EULA)
+================================================================
+
+Please read this agreement carefully before installing or using the Vacation Management System.
+
+1. License Grant
+   TAMEER grants the user a non-exclusive license to use this software.
+
+2. Intellectual Property Rights
+   All rights reserved © 2025 TAMEER Facility Management.
+   This software is protected by international copyright laws.
+
+3. Restrictions
+   - Copying or distributing the software without written permission is prohibited
+   - Reverse engineering or decompiling the software is prohibited
+   - Renting or lending the software to third parties is prohibited
+
+4. Disclaimer
+   This software is provided "as is" without any express or implied warranties.
+   The company is not liable for any direct or indirect damages.
+
+5. Technical Support
+   The company provides technical support via:
+   Email: support@tameer.com
+   Website: www.tameer.com
+
+6. Termination
+   The company reserves the right to terminate this license in case of violation of any terms.
+
+7. Governing Law
+   This agreement is governed by the laws of the Kingdom of Saudi Arabia.
+
+By clicking "I Agree" or by installing the software, you acknowledge that you have read, understood, and agree to be bound by the terms and conditions of this agreement.
+
+TAMEER Facility Management
+Effective Date: 2025
+Version: 2.0.0

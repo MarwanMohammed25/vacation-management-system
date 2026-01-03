@@ -1,0 +1,35 @@
+node_modules
+dist
+.env
+.env.local
+.env.production
+.DS_Store
+*.log
+.vscode
+.idea
+
+# Electron build outputs
+release/
+*.exe
+*.blockmap
+builder-debug.yml
+builder-effective-config.yaml
+
+# Firebase
+.firebase/
+.firebaserc
+firebase-debug.log
+
+# OS files
+Thumbs.db
+desktop.ini
+*.swp
+*.swo
+*~
+
+# IDE
+*.sublime-*
+*.suo
+*.ntvs*
+*.njsproj
+*.sln

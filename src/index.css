@@ -1,0 +1,291 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  direction: rtl;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.card {
+  background: white;
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  margin-bottom: 20px;
+}
+
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.btn-secondary {
+  background: #f0f0f0;
+  color: #333;
+}
+
+.btn-secondary:hover {
+  background: #e0e0e0;
+}
+
+.btn-success {
+  background: #10b981;
+  color: white;
+}
+
+.btn-success:hover {
+  background: #059669;
+}
+
+.btn-danger {
+  background: #ef4444;
+  color: white;
+}
+
+.btn-danger:hover {
+  background: #dc2626;
+}
+
+input, select, textarea {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: border-color 0.3s;
+  direction: rtl;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+th, td {
+  padding: 15px;
+  text-align: right;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+th {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-weight: 600;
+}
+
+tr:hover {
+  background: #f9fafb;
+}
+
+.nav {
+  background: white;
+  padding: 20px;
+  margin-bottom: 30px;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.nav-links {
+  display: flex;
+  gap: 15px;
+  list-style: none;
+  justify-content: center;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: #374151;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.header {
+  text-align: center;
+  color: white;
+  margin-bottom: 30px;
+  position: relative;
+}
+
+.header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.user-info {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.user-email {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  backdrop-filter: blur(10px);
+}
+
+.logout-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(239, 68, 68, 0.9);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.logout-button:hover {
+  background: rgba(220, 38, 38, 1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+}
+
+.logout-button svg {
+  width: 18px;
+  height: 18px;
+}
+
+.vacation-balance {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.balance-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.balance-card h3 {
+  font-size: 1rem;
+  margin-bottom: 10px;
+}
+
+.balance-card .number {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.print-preview {
+  background: white;
+  padding: 40px;
+  max-width: 800px;
+  margin: 20px auto;
+  border: 1px solid #ccc;
+  position: relative;
+}
+
+.print-only {
+  display: none;
+}
+
+@media print {
+  body {
+    background: white;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  .print-only,
+  .print-only * {
+    visibility: visible;
+  }
+
+  .print-only {
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
+  html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+}

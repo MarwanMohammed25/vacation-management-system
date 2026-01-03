@@ -1,0 +1,20 @@
+{
+  "rules": {
+    ".read": "auth != null",
+    ".write": "auth != null",
+    
+    "employees": {
+      ".indexOn": ["name", "department"],
+      "$employeeId": {
+        ".validate": "newData.hasChildren(['name', 'position', 'department', 'regularVacation', 'casualVacation'])"
+      }
+    },
+    
+    "vacations": {
+      ".indexOn": ["employeeId", "vacationType", "createdAt"],
+      "$vacationId": {
+        ".validate": "newData.hasChildren(['employeeId', 'employeeName', 'position', 'department', 'vacationType', 'startDate', 'endDate', 'days', 'reason', 'requestDate', 'createdAt'])"
+      }
+    }
+  }
+}

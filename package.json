@@ -1,0 +1,93 @@
+{
+  "name": "vacation-management-system",
+  "version": "2.0.1",
+  "private": true,
+  "type": "module",
+  "main": "electron/main.cjs",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "echo 'No linter configured yet'",
+    "electron": "concurrently \"cross-env NODE_ENV=development vite\" \"wait-on http://localhost:5173 && cross-env NODE_ENV=development electron .\"",
+    "electron:build": "vite build && electron-builder",
+    "electron:build:win": "vite build && electron-builder --win",
+    "electron:build:mac": "vite build && electron-builder --mac",
+    "electron:build:linux": "vite build && electron-builder --linux"
+  },
+  "dependencies": {
+    "firebase": "^10.7.1",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^2.5.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.20.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.43",
+    "@types/react-dom": "^18.2.17",
+    "@vitejs/plugin-react": "^4.2.1",
+    "concurrently": "^9.2.1",
+    "cross-env": "^10.1.0",
+    "electron": "^39.2.3",
+    "electron-builder": "^26.0.12",
+    "sharp": "^0.34.5",
+    "to-ico": "^1.1.5",
+    "vite": "^5.0.8",
+    "wait-on": "^9.0.3"
+  },
+  "build": {
+    "appId": "com.altameer.vacation-management",
+    "productName": "التعمير - إدارة الإجازات",
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "build/icon*.png"
+    ],
+    "directories": {
+      "buildResources": "build",
+      "output": "release"
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "tameer-facility",
+      "repo": "vacation-management",
+      "releaseType": "release"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.png",
+      "artifactName": "${productName}-Setup-${version}.${ext}",
+      "signAndEditExecutable": false,
+      "publisherName": "Tameer Facility Management"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "التعمير - إدارة الإجازات",
+      "differentialPackage": true
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "build/icon.png",
+      "category": "public.app-category.business"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "icon": "build/icon.png",
+      "category": "Office"
+    }
+  }
+}
