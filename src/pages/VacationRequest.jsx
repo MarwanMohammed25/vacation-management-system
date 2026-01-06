@@ -23,7 +23,8 @@ function VacationRequest() {
     days: 1,
     reason: '',
     coveringEmployee: '',
-    requestDate: new Date().toISOString().split('T')[0]
+    requestDate: new Date().toISOString().split('T')[0],
+    customRequestDate: false // للتحكم في تاريخ التحرير
   });
 
   useEffect(() => {
@@ -369,6 +370,41 @@ function VacationRequest() {
               disabled
               style={{ background: '#f3f4f6', fontWeight: 'bold', fontSize: '18px' }}
             />
+          </div>
+
+          <div className="form-group">
+            <label>تاريخ التحرير *</label>
+            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+              <input
+                type="date"
+                value={formData.requestDate}
+                onChange={(e) => setFormData(prev => ({ 
+                  ...prev, 
+                  requestDate: e.target.value,
+                  customRequestDate: true 
+                }))}
+                required
+                style={{ flex: 1 }}
+              />
+              {formData.customRequestDate && (
+                <button
+                  type="button"
+                  onClick={() => setFormData(prev => ({
+                    ...prev,
+                    requestDate: new Date().toISOString().split('T')[0],
+                    customRequestDate: false
+                  }))}
+                  className="btn btn-secondary"
+                  style={{ padding: '8px 12px', whiteSpace: 'nowrap' }}
+                  title="العودة للتاريخ التلقائي (اليوم)"
+                >
+                  🔄 تلقائي
+                </button>
+              )}
+            </div>
+            <small style={{ color: '#6b7280', marginTop: '5px', display: 'block' }}>
+              {formData.customRequestDate ? '📅 تاريخ يدوي' : '🤖 تاريخ تلقائي (اليوم)'}
+            </small>
           </div>
         </div>
 

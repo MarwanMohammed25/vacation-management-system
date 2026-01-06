@@ -16,6 +16,7 @@
     "electron:build:linux": "vite build && electron-builder --linux"
   },
   "dependencies": {
+    "electron-updater": "^6.6.2",
     "firebase": "^10.7.1",
     "html2canvas": "^1.4.1",
     "jspdf": "^2.5.1",
@@ -65,8 +66,7 @@
       ],
       "icon": "build/icon.png",
       "artifactName": "${productName}-Setup-${version}.${ext}",
-      "signAndEditExecutable": false,
-      "publisherName": "Tameer Facility Management"
+      "signAndEditExecutable": false
     },
     "nsis": {
       "oneClick": false,
@@ -74,7 +74,8 @@
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "shortcutName": "التعمير - إدارة الإجازات",
-      "differentialPackage": true
+      "differentialPackage": true,
+      "publisherName": "IT-M"
     },
     "mac": {
       "target": "dmg",

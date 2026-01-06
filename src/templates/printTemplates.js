@@ -642,10 +642,46 @@ export const VacationHistoryTemplate = (vacation, toArabicNumerals, employeeVaca
   const missionDays = missionVacations.reduce((sum, v) => sum + v.days, 0);
   
   // دالة للتحقق من حالة الإجازة
-  const getVacationStatus = (endDate) => {
+  const getVacationStatus = (vac) => {
+    const isMission = vac.vacationType === 'مأمورية';
+    
+    // إذا كانت هناك حالة يدوية محددة، تحويلها للنص المناسب
+    if (vac.vacationStatus && vac.vacationStatus.trim() !== '') {
+      const status = vac.vacationStatus;
+      
+      // تحويل الحالات للنص المناسب حسب نوع الإجازة
+      if (isMission) {
+        if (status === 'تمت الإجازة' || status === 'تمت المأمورية') return 'تمت المأمورية';
+        if (status === 'مستمرة الإجازة' || status === 'مستمرة المأمورية') return 'مستمرة المأمورية';
+        if (status === 'لم تبدأ' || status === 'لم تبدأ المأمورية') return 'لم تبدأ المأمورية';
+      } else {
+        // للإجازات الأخرى، احتفظ بالحالة كما هي
+        if (status === 'تمت المأمورية') return 'تمت الإجازة';
+        if (status === 'مستمرة المأمورية') return 'مستمرة الإجازة';
+        if (status === 'لم تبدأ المأمورية') return 'لم تبدأ';
+      }
+      
+      return status;
+    }
+    
+    // وإلا احسبها تلقائياً حسب التاريخ
     const today = new Date();
-    const end = new Date(endDate);
-    return end >= today ? 'جارية' : 'منتهية';
+    today.setHours(0, 0, 0, 0);
+    const start = new Date(vac.startDate);
+    const end = new Date(vac.endDate);
+    
+    // نصوص مختلفة حسب نوع الإجازة
+    const completedText = isMission ? 'تمت المأمورية' : 'تمت الإجازة';
+    const ongoingText = isMission ? 'مستمرة المأمورية' : 'مستمرة الإجازة';
+    const notStartedText = isMission ? 'لم تبدأ المأمورية' : 'لم تبدأ';
+    
+    if (end < today) {
+      return completedText;
+    } else if (start <= today && end >= today) {
+      return ongoingText;
+    } else {
+      return notStartedText;
+    }
   };
   
   // توليد رقم سجل فريد لكل إجازة
@@ -777,6 +813,17 @@ ${!isFirstPage ? '<div style="page-break-before: always;"></div>' : ''}
 
     .status-ended {
         color: #6b7280;
+        font-weight: bold;
+    }
+
+    .status-partial {
+        color: #f59e0b;
+        font-weight: bold;
+    }
+
+    .status-pending {
+        color: #3b82f6;
+        font-weight: bold;
     }
 
     .history-stats-section {
@@ -863,7 +910,7 @@ ${!isFirstPage ? '<div style="page-break-before: always;"></div>' : ''}
                 <span class="info-value">${vacation.position}</span>
             </div>
             <div class="info-row">
-                <span class="info-label">القسم:</span>
+                <span class="info-label">جهة العمل:</span>
                 <span class="info-value">${vacation.department}</span>
             </div>
         </div>
@@ -894,12 +941,11 @@ ${!isFirstPage ? '<div style="page-break-before: always;"></div>' : ''}
         <thead>
             <tr>
                 <th style="width: 5%;">م</th>
-                <th style="width: 11%;">رقم السجل</th>
-                <th style="width: 10%;">النوع</th>
-                <th style="width: 10%;">من</th>
-                <th style="width: 10%;">إلى</th>
-                <th style="width: 6%;">الأيام</th>
-                <th style="width: 8%;">الحالة</th>
+                <th style="width: 12%;">النوع</th>
+                <th style="width: 11%;">من</th>
+                <th style="width: 11%;">إلى</th>
+                <th style="width: 7%;">الأيام</th>
+                <th style="width: 14%;">حالة الإجازة</th>
                 <th style="width: 20%;">السبب</th>
                 <th style="width: 6%;">مرفق</th>
                 <th style="width: 14%;">تاريخ التقديم</th>
@@ -907,18 +953,25 @@ ${!isFirstPage ? '<div style="page-break-before: always;"></div>' : ''}
         </thead>
         <tbody>
             ${employeeVacations.map((vac, index) => {
-              const status = getVacationStatus(vac.endDate);
-              const recordNum = generateRecordNumber(vac, index);
+              const status = getVacationStatus(vac);
+              const statusClass = status === 'مستمرة الإجازة' ? 'status-active' : 
+                                 status === 'تمت الإجازة' ? 'status-ended' : 
+                                 status === 'تمت جزء من الإجازة' ? 'status-partial' : 'status-pending';
+              
+              // عرض تاريخ الانتهاء الفعلي إذا كانت الإجازة جزئية
+              const endDateDisplay = (status === 'تمت جزء من الإجازة' && vac.actualEndDate) 
+                ? `${toArabicNumerals(vac.actualEndDate)} (فعلي)`
+                : toArabicNumerals(vac.endDate);
+              
               return `
             <tr>
                 <td>${toArabicNumerals(index + 1)}</td>
-                <td>${toArabicNumerals(recordNum)}</td>
                 <td>${vac.vacationType}</td>
                 <td>${toArabicNumerals(vac.startDate)}</td>
-                <td>${toArabicNumerals(vac.endDate)}</td>
+                <td>${endDateDisplay}</td>
                 <td>${toArabicNumerals(vac.days)}</td>
-                <td class="${status === 'جارية' ? 'status-active' : 'status-ended'}">${status}</td>
-                <td>${vac.reason}</td>
+                <td class="${statusClass}">${status}</td>
+                <td>${vac.reason || '-'}</td>
                 <td>${vac.attachmentBase64 ? '✓' : '-'}</td>
                 <td>${toArabicNumerals(vac.requestDate)}</td>
             </tr>

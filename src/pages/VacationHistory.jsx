@@ -222,7 +222,9 @@ function VacationHistory() {
       days: vacation.days,
       reason: vacation.reason || '',
       coveringEmployee: vacation.coveringEmployee || '',
-      requestDate: vacation.requestDate
+      requestDate: vacation.requestDate,
+      vacationStatus: vacation.vacationStatus || '', // إضافة الحالة اليدوية إذا كانت موجودة
+      actualEndDate: vacation.actualEndDate || '' // إضافة تاريخ الانتهاء الفعلي
     };
     console.log('📝 Setting editingVacation to:', editData);
     setEditingVacation(editData);
@@ -451,7 +453,9 @@ function VacationHistory() {
         days: editingVacation.days,
         reason: editingVacation.reason,
         coveringEmployee: editingVacation.coveringEmployee,
-        vacationType: editingVacation.vacationType
+        vacationType: editingVacation.vacationType,
+        vacationStatus: editingVacation.vacationStatus || '', // حفظ الحالة اليدوية أو فارغ للحساب التلقائي
+        actualEndDate: editingVacation.actualEndDate || '' // حفظ تاريخ الانتهاء الفعلي
       });
       
       setEditingVacation(null);
@@ -981,6 +985,50 @@ function VacationHistory() {
                 })}
               />
             </div>
+
+            <div className="form-group">
+              <label>حالة الإجازة (اختياري - يُحسب تلقائياً إذا تُرك فارغاً)</label>
+              <select
+                value={editingVacation.vacationStatus || ''}
+                onChange={(e) => setEditingVacation({
+                  ...editingVacation,
+                  vacationStatus: e.target.value
+                })}
+              >
+                <option value="">تلقائي - حسب التاريخ</option>
+                {editingVacation.vacationType === 'مأمورية' ? (
+                  <>
+                    <option value="تمت المأمورية">تمت المأمورية</option>
+                    <option value="مستمرة المأمورية">مستمرة المأمورية</option>
+                    <option value="لم تبدأ المأمورية">لم تبدأ المأمورية</option>
+                  </>
+                ) : (
+                  <>
+                    <option value="تمت الإجازة">تمت الإجازة</option>
+                    <option value="مستمرة الإجازة">مستمرة الإجازة</option>
+                    <option value="تمت جزء من الإجازة">تمت جزء من الإجازة</option>
+                    <option value="لم تبدأ">لم تبدأ</option>
+                  </>
+                )}
+              </select>
+            </div>
+
+            {editingVacation.vacationStatus === 'تمت جزء من الإجازة' && (
+              <div className="form-group">
+                <label>تاريخ الانتهاء الفعلي للإجازة</label>
+                <input
+                  type="date"
+                  value={editingVacation.actualEndDate || ''}
+                  onChange={(e) => setEditingVacation({
+                    ...editingVacation,
+                    actualEndDate: e.target.value
+                  })}
+                />
+                <small style={{ color: '#6b7280', display: 'block', marginTop: '5px' }}>
+                  التاريخ الذي انتهت فيه الإجازة فعلياً (قبل التاريخ المحدد)
+                </small>
+              </div>
+            )}
 
             <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
               <button
