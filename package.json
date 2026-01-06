@@ -49,12 +49,14 @@
       "buildResources": "build",
       "output": "release"
     },
-    "publish": {
-      "provider": "github",
-      "owner": "MarwanMohammed25",
-      "repo": "vacation-management-system",
-      "releaseType": "release"
-    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "MarwanMohammed25",
+        "repo": "vacation-management-system",
+        "releaseType": "release"
+      }
+    ],
     "win": {
       "target": [
         {

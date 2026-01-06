@@ -643,25 +643,9 @@ export const VacationHistoryTemplate = (vacation, toArabicNumerals, employeeVaca
   
   // دالة للتحقق من حالة الإجازة
   const getVacationStatus = (vac) => {
-    const isMission = vac.vacationType === 'مأمورية';
-    
-    // إذا كانت هناك حالة يدوية محددة، تحويلها للنص المناسب
+    // إذا كانت هناك حالة يدوية محددة، استخدمها
     if (vac.vacationStatus && vac.vacationStatus.trim() !== '') {
-      const status = vac.vacationStatus;
-      
-      // تحويل الحالات للنص المناسب حسب نوع الإجازة
-      if (isMission) {
-        if (status === 'تمت الإجازة' || status === 'تمت المأمورية') return 'تمت المأمورية';
-        if (status === 'مستمرة الإجازة' || status === 'مستمرة المأمورية') return 'مستمرة المأمورية';
-        if (status === 'لم تبدأ' || status === 'لم تبدأ المأمورية') return 'لم تبدأ المأمورية';
-      } else {
-        // للإجازات الأخرى، احتفظ بالحالة كما هي
-        if (status === 'تمت المأمورية') return 'تمت الإجازة';
-        if (status === 'مستمرة المأمورية') return 'مستمرة الإجازة';
-        if (status === 'لم تبدأ المأمورية') return 'لم تبدأ';
-      }
-      
-      return status;
+      return vac.vacationStatus;
     }
     
     // وإلا احسبها تلقائياً حسب التاريخ
@@ -671,6 +655,7 @@ export const VacationHistoryTemplate = (vacation, toArabicNumerals, employeeVaca
     const end = new Date(vac.endDate);
     
     // نصوص مختلفة حسب نوع الإجازة
+    const isMission = vac.vacationType === 'مأمورية';
     const completedText = isMission ? 'تمت المأمورية' : 'تمت الإجازة';
     const ongoingText = isMission ? 'مستمرة المأمورية' : 'مستمرة الإجازة';
     const notStartedText = isMission ? 'لم تبدأ المأمورية' : 'لم تبدأ';
@@ -954,8 +939,8 @@ ${!isFirstPage ? '<div style="page-break-before: always;"></div>' : ''}
         <tbody>
             ${employeeVacations.map((vac, index) => {
               const status = getVacationStatus(vac);
-              const statusClass = status === 'مستمرة الإجازة' ? 'status-active' : 
-                                 status === 'تمت الإجازة' ? 'status-ended' : 
+              const statusClass = (status === 'مستمرة الإجازة' || status === 'مستمرة المأمورية') ? 'status-active' : 
+                                 (status === 'تمت الإجازة' || status === 'تمت المأمورية') ? 'status-ended' : 
                                  status === 'تمت جزء من الإجازة' ? 'status-partial' : 'status-pending';
               
               // عرض تاريخ الانتهاء الفعلي إذا كانت الإجازة جزئية
