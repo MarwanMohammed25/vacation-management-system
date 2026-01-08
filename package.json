@@ -1,6 +1,8 @@
 {
   "name": "vacation-management-system",
-  "version": "2.0.1",
+  "version": "2.0.2",
+  "description": "نظام إدارة الإجازات - التعمير لإدارة المرافق",
+  "author": "IT-M",
   "private": true,
   "type": "module",
   "main": "electron/main.cjs",
@@ -76,8 +78,7 @@
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "shortcutName": "التعمير - إدارة الإجازات",
-      "differentialPackage": true,
-      "publisherName": "IT-M"
+      "differentialPackage": true
     },
     "mac": {
       "target": "dmg",

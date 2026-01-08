@@ -149,11 +149,6 @@ function VacationRequest() {
       }
 
       // التحقق من صحة التواريخ
-      if (!isDateValid(formData.startDate)) {
-        setToast({ message: MESSAGES.ERROR.PAST_DATE, type: 'error' });
-        return;
-      }
-
       if (new Date(formData.endDate) < new Date(formData.startDate)) {
         setToast({ message: MESSAGES.ERROR.INVALID_DATES, type: 'error' });
         return;
@@ -294,6 +289,11 @@ function VacationRequest() {
             <div className="number">∞</div>
             <p>غير محدود</p>
           </div>
+          <div className="balance-card" style={{ background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)' }}>
+            <h3>الإذن</h3>
+            <div className="number">∞</div>
+            <p>غير محدود</p>
+          </div>
         </div>
       )}
 
@@ -336,6 +336,7 @@ function VacationRequest() {
               <option value={VACATION_TYPES.CASUAL}>{VACATION_TYPES.CASUAL}</option>
               <option value={VACATION_TYPES.MISSION}>{VACATION_TYPES.MISSION}</option>
               <option value={VACATION_TYPES.SICK}>{VACATION_TYPES.SICK}</option>
+              <option value={VACATION_TYPES.PERMISSION}>{VACATION_TYPES.PERMISSION}</option>
             </select>
           </div>
 
@@ -430,7 +431,7 @@ function VacationRequest() {
           </div>
         )}
 
-        {(formData.vacationType === VACATION_TYPES.SICK || formData.vacationType === VACATION_TYPES.MISSION) && (
+        {(formData.vacationType === VACATION_TYPES.SICK || formData.vacationType === VACATION_TYPES.MISSION || formData.vacationType === VACATION_TYPES.PERMISSION) && (
           <div className="form-group">
             <label>إرفاق صورة (اختياري) - JPG, PNG</label>
             <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>

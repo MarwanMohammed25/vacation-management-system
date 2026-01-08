@@ -21,17 +21,14 @@ export const calculateDays = (startDate, endDate) => {
 };
 
 /**
- * التحقق من أن التاريخ ليس في الماضي
+ * التحقق من أن التاريخ صالح (يقبل جميع التواريخ بما فيها الماضية)
  * @param {string} date - التاريخ للفحص (YYYY-MM-DD)
  * @returns {boolean} true إذا كان التاريخ صالحاً
  */
 export const isDateValid = (date) => {
+  if (!date) return false;
   const inputDate = new Date(date);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  inputDate.setHours(0, 0, 0, 0);
-  
-  return inputDate >= today;
+  return !isNaN(inputDate.getTime());
 };
 
 /**

@@ -6,6 +6,9 @@ import Login from './pages/Login';
 import Employees from './pages/Employees';
 import VacationRequest from './pages/VacationRequest';
 import VacationHistory from './pages/VacationHistory';
+import MissionRequest from './pages/MissionRequest';
+import SickLeaveRequest from './pages/SickLeaveRequest';
+import PermissionRequest from './pages/PermissionRequest';
 
 function AppContent() {
   const { isAuthenticated, currentUser, signOut } = useAuth();
@@ -52,7 +55,16 @@ function AppContent() {
             <Link to="/vacation-request">تقديم إجازة</Link>
           </li>
           <li>
-            <Link to="/vacation-history">سجل الإجازات</Link>
+            <Link to="/mission-request">💼 تقديم مأمورية</Link>
+          </li>
+          <li>
+            <Link to="/sick-leave">🏥 تقديم مرضية</Link>
+          </li>
+          <li>
+            <Link to="/permission-request">📋 تقديم إذن</Link>
+          </li>
+          <li>
+            <Link to="/vacation-history">📊 السجلات</Link>
           </li>
         </ul>
       </nav>
@@ -60,6 +72,9 @@ function AppContent() {
       <Routes>
         <Route path="/" element={<ProtectedRoute><Employees /></ProtectedRoute>} />
         <Route path="/vacation-request" element={<ProtectedRoute><VacationRequest /></ProtectedRoute>} />
+        <Route path="/mission-request" element={<ProtectedRoute><MissionRequest /></ProtectedRoute>} />
+        <Route path="/sick-leave" element={<ProtectedRoute><SickLeaveRequest /></ProtectedRoute>} />
+        <Route path="/permission-request" element={<ProtectedRoute><PermissionRequest /></ProtectedRoute>} />
         <Route path="/vacation-history" element={<ProtectedRoute><VacationHistory /></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

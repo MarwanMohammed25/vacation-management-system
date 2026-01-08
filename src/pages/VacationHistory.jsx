@@ -5,14 +5,14 @@ import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { VACATION_ICONS, MESSAGES } from '../constants';
 import { toArabicNumerals } from '../utils/dateUtils';
-import { RegularVacationTemplate, CasualVacationTemplate, VacationHistoryTemplate, AttachmentPageTemplate } from '../templates/printTemplates';
+import { RegularVacationTemplate, CasualVacationTemplate, PermissionTemplate, VacationHistoryTemplate, AttachmentPageTemplate } from '../templates/printTemplates';
 import Toast from '../components/Toast';
 import LoadingSpinner from '../components/LoadingSpinner';
 
 function VacationHistory() {
   const [vacations, setVacations] = useState([]);
   const [employees, setEmployees] = useState([]);
-  const [filterType, setFilterType] = useState('الكل');
+  const [activeTab, setActiveTab] = useState('vacations');
   const [selectedVacation, setSelectedVacation] = useState(null);
   const [editingVacation, setEditingVacation] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -34,7 +34,7 @@ function VacationHistory() {
         const vacationsList = Object.keys(data).map(key => ({
           id: key,
           ...data[key]
-        })).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        })).sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
         setVacations(vacationsList);
       } else {
         setVacations([]);
@@ -61,10 +61,22 @@ function VacationHistory() {
     };
   }, []);
 
-  const filteredVacations = vacations.filter(vacation => {
-    const typeMatch = filterType === 'الكل' || vacation.vacationType === filterType;
-    return typeMatch;
-  });
+  const getFilteredVacations = () => {
+    switch(activeTab) {
+      case 'vacations':
+        return vacations.filter(v => v.vacationType === 'اعتيادي' || v.vacationType === 'عارضة');
+      case 'missions':
+        return vacations.filter(v => v.vacationType === 'مأمورية');
+      case 'sick':
+        return vacations.filter(v => v.vacationType === 'مرضية');
+      case 'permissions':
+        return vacations.filter(v => v.vacationType === 'إذن');
+      default:
+        return vacations;
+    }
+  };
+
+  const filteredVacations = getFilteredVacations();
 
   const handlePrint = async (vacation) => {
     setSelectedVacation(vacation);
@@ -96,7 +108,7 @@ function VacationHistory() {
       // الحصول على جميع إجازات الموظف
       const employeeVacations = vacations
         .filter(v => v.employeeId === vacation.employeeId)
-        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
       
       // حساب أيام الإجازات المرضية والمأمورية المستخدمة
       const sickDaysUsed = employeeVacations
@@ -134,6 +146,8 @@ function VacationHistory() {
         mainTemplate = RegularVacationTemplate(vacation, toArabicNumerals);
       } else if (vacation.vacationType === 'عارضة') {
         mainTemplate = CasualVacationTemplate(vacation, toArabicNumerals);
+      } else if (vacation.vacationType === 'إذن') {
+        mainTemplate = PermissionTemplate(vacation, toArabicNumerals);
       } else if (vacation.vacationType === 'مأمورية' || vacation.vacationType === 'مرضية') {
         // للمأمورية والمرضية: السجل مباشرة بدون صفحة أولى
         mainTemplate = '';
@@ -257,7 +271,7 @@ function VacationHistory() {
       // الحصول على جميع إجازات الموظف
       const employeeVacations = vacations
         .filter(v => v.employeeId === vacation.employeeId)
-        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
       
       // حساب أيام الإجازات المرضية والمأمورية المستخدمة
       const sickDaysUsed = employeeVacations
@@ -521,19 +535,128 @@ function VacationHistory() {
       )}
       
       <div className="card">
-        <h2 style={{ marginBottom: '20px', color: '#374151' }}>سجل الإجازات</h2>
+        <h2 style={{ marginBottom: '25px', color: '#374151', fontSize: '28px' }}>📊 السجلات</h2>
         
-        <div style={{ display: 'flex', gap: '15px', marginBottom: '20px', flexWrap: 'wrap' }}>
-          <div className="form-group" style={{ flex: '1', minWidth: '200px', marginBottom: 0 }}>
-            <label>تصفية حسب النوع</label>
-            <select value={filterType} onChange={(e) => setFilterType(e.target.value)}>
-              <option value="الكل">الكل</option>
-              <option value="اعتيادي">اعتيادي</option>
-              <option value="عارضة">عارضة</option>
-              <option value="مأمورية">مأمورية</option>
-              <option value="مرضية">مرضية</option>
-            </select>
-          </div>
+        <div style={{ 
+          display: 'flex', 
+          gap: '10px', 
+          marginBottom: '30px', 
+          borderBottom: '2px solid #e5e7eb',
+          overflowX: 'auto',
+          paddingBottom: '5px'
+        }}>
+          <button
+            onClick={() => setActiveTab('vacations')}
+            style={{
+              padding: '12px 24px',
+              border: 'none',
+              background: activeTab === 'vacations' ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : 'transparent',
+              color: activeTab === 'vacations' ? 'white' : '#6b7280',
+              fontWeight: activeTab === 'vacations' ? 'bold' : 'normal',
+              fontSize: '16px',
+              borderRadius: '8px 8px 0 0',
+              cursor: 'pointer',
+              transition: 'all 0.3s',
+              whiteSpace: 'nowrap',
+              boxShadow: activeTab === 'vacations' ? '0 -2px 8px rgba(102, 126, 234, 0.3)' : 'none'
+            }}
+          >
+            🏖️ الإجازات ({vacations.filter(v => v.vacationType === 'اعتيادي' || v.vacationType === 'عارضة').length})
+          </button>
+          <button
+            onClick={() => setActiveTab('missions')}
+            style={{
+              padding: '12px 24px',
+              border: 'none',
+              background: activeTab === 'missions' ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' : 'transparent',
+              color: activeTab === 'missions' ? 'white' : '#6b7280',
+              fontWeight: activeTab === 'missions' ? 'bold' : 'normal',
+              fontSize: '16px',
+              borderRadius: '8px 8px 0 0',
+              cursor: 'pointer',
+              transition: 'all 0.3s',
+              whiteSpace: 'nowrap',
+              boxShadow: activeTab === 'missions' ? '0 -2px 8px rgba(16, 185, 129, 0.3)' : 'none'
+            }}
+          >
+            💼 المأموريات ({vacations.filter(v => v.vacationType === 'مأمورية').length})
+          </button>
+          <button
+            onClick={() => setActiveTab('sick')}
+            style={{
+              padding: '12px 24px',
+              border: 'none',
+              background: activeTab === 'sick' ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)' : 'transparent',
+              color: activeTab === 'sick' ? 'white' : '#6b7280',
+              fontWeight: activeTab === 'sick' ? 'bold' : 'normal',
+              fontSize: '16px',
+              borderRadius: '8px 8px 0 0',
+              cursor: 'pointer',
+              transition: 'all 0.3s',
+              whiteSpace: 'nowrap',
+              boxShadow: activeTab === 'sick' ? '0 -2px 8px rgba(245, 158, 11, 0.3)' : 'none'
+            }}
+          >
+            🏥 المرضية ({vacations.filter(v => v.vacationType === 'مرضية').length})
+          </button>
+          <button
+            onClick={() => setActiveTab('permissions')}
+            style={{
+              padding: '12px 24px',
+              border: 'none',
+              background: activeTab === 'permissions' ? 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)' : 'transparent',
+              color: activeTab === 'permissions' ? 'white' : '#6b7280',
+              fontWeight: activeTab === 'permissions' ? 'bold' : 'normal',
+              fontSize: '16px',
+              borderRadius: '8px 8px 0 0',
+              cursor: 'pointer',
+              transition: 'all 0.3s',
+              whiteSpace: 'nowrap',
+              boxShadow: activeTab === 'permissions' ? '0 -2px 8px rgba(139, 92, 246, 0.3)' : 'none'
+            }}
+          >
+            📋 الأذونات ({vacations.filter(v => v.vacationType === 'إذن').length})
+          </button>
+        </div>
+
+        {/* Tab Content Header */}
+        <div style={{
+          background: activeTab === 'vacations' ? 'linear-gradient(135deg, #667eea15 0%, #764ba215 100%)' :
+                      activeTab === 'missions' ? 'linear-gradient(135deg, #10b98115 0%, #05966915 100%)' :
+                      activeTab === 'sick' ? 'linear-gradient(135deg, #f59e0b15 0%, #d9770615 100%)' :
+                      'linear-gradient(135deg, #8b5cf615 0%, #7c3aed15 100%)',
+          padding: '15px 20px',
+          borderRadius: '10px',
+          marginBottom: '20px',
+          border: '2px solid',
+          borderColor: activeTab === 'vacations' ? '#667eea' :
+                       activeTab === 'missions' ? '#10b981' :
+                       activeTab === 'sick' ? '#f59e0b' :
+                       '#8b5cf6'
+        }}>
+          <h3 style={{ 
+            margin: 0,
+            color: activeTab === 'vacations' ? '#667eea' :
+                   activeTab === 'missions' ? '#10b981' :
+                   activeTab === 'sick' ? '#f59e0b' :
+                   '#8b5cf6',
+            fontSize: '20px'
+          }}>
+            {activeTab === 'vacations' && '🏖️ الإجازات الاعتيادية والعارضة'}
+            {activeTab === 'missions' && '💼 المأموريات الرسمية'}
+            {activeTab === 'sick' && '🏥 الإجازات المرضية'}
+            {activeTab === 'permissions' && '📋 الأذونات'}
+          </h3>
+          <p style={{ 
+            margin: '5px 0 0 0',
+            color: '#6b7280',
+            fontSize: '14px'
+          }}>
+            {activeTab === 'vacations' && `إجمالي ${filteredVacations.length} إجازة مسجلة`}
+            {activeTab === 'missions' && `إجمالي ${filteredVacations.length} مأمورية مسجلة`}
+            {activeTab === 'sick' && `إجمالي ${filteredVacations.length} إجازة مرضية مسجلة`}
+            {activeTab === 'permissions' && `إجمالي ${filteredVacations.length} إذن مسجل`}
+          </p>
         </div>
 
         <div style={{ 
@@ -545,32 +668,69 @@ function VacationHistory() {
             <div style={{ 
               gridColumn: '1 / -1', 
               textAlign: 'center', 
-              padding: '40px',
-              color: '#9ca3af'
+              padding: '60px 40px',
+              background: 'linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%)',
+              borderRadius: '12px',
+              border: '2px dashed #d1d5db'
             }}>
-              <p style={{ fontSize: '18px' }}>لا توجد إجازات مسجلة</p>
+              <div style={{ fontSize: '48px', marginBottom: '15px' }}>
+                {activeTab === 'vacations' && '🏖️'}
+                {activeTab === 'missions' && '💼'}
+                {activeTab === 'sick' && '🏥'}
+                {activeTab === 'permissions' && '📋'}
+              </div>
+              <p style={{ fontSize: '20px', color: '#6b7280', fontWeight: 'bold', marginBottom: '8px' }}>
+                {activeTab === 'vacations' && 'لا توجد إجازات مسجلة'}
+                {activeTab === 'missions' && 'لا توجد مأموريات مسجلة'}
+                {activeTab === 'sick' && 'لا توجد إجازات مرضية مسجلة'}
+                {activeTab === 'permissions' && 'لا توجد أذونات مسجلة'}
+              </p>
+              <p style={{ fontSize: '14px', color: '#9ca3af' }}>
+                يمكنك إضافة طلب جديد من القائمة الرئيسية
+              </p>
             </div>
           ) : (
-            filteredVacations.map(vacation => (
+            filteredVacations.map(vacation => {
+              const getBorderColor = () => {
+                if (vacation.vacationType === 'اعتيادي' || vacation.vacationType === 'عارضة') return '#667eea';
+                if (vacation.vacationType === 'مأمورية') return '#10b981';
+                if (vacation.vacationType === 'مرضية') return '#f59e0b';
+                if (vacation.vacationType === 'إذن') return '#8b5cf6';
+                return '#e5e7eb';
+              };
+
+              return (
               <div 
                 key={vacation.id} 
                 style={{
-                  border: '2px solid #e5e7eb',
+                  border: `2px solid ${getBorderColor()}`,
                   borderRadius: '12px',
                   padding: '20px',
                   background: 'linear-gradient(to bottom, #ffffff, #f9fafb)',
                   transition: 'transform 0.2s, box-shadow 0.2s',
-                  cursor: 'pointer'
+                  cursor: 'pointer',
+                  position: 'relative',
+                  overflow: 'hidden'
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = 'translateY(-5px)';
-                  e.currentTarget.style.boxShadow = '0 10px 25px rgba(0,0,0,0.1)';
+                  e.currentTarget.style.boxShadow = `0 10px 25px ${getBorderColor()}30`;
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.transform = 'translateY(0)';
                   e.currentTarget.style.boxShadow = 'none';
                 }}
               >
+                {/* شريط جانبي ملون */}
+                <div style={{
+                  position: 'absolute',
+                  top: 0,
+                  right: 0,
+                  width: '5px',
+                  height: '100%',
+                  background: getBorderColor()
+                }}></div>
+                
                 <div style={{ 
                   display: 'flex', 
                   justifyContent: 'space-between', 
@@ -602,8 +762,13 @@ function VacationHistory() {
                     fontSize: '16px',
                     marginBottom: '8px'
                   }}>
-                    <strong>المدة:</strong> {vacation.days} يوم
+                    <strong>المدة:</strong> {vacation.vacationType === 'إذن' ? (vacation.duration || 'غير محدد') : `${vacation.days} يوم`}
                   </p>
+                  {vacation.vacationType === 'إذن' && vacation.startTime && vacation.endTime && (
+                    <p style={{ color: '#6b7280', marginBottom: '8px' }}>
+                      <strong>الوقت:</strong> من {vacation.startTime} إلى {vacation.endTime}
+                    </p>
+                  )}
                   <p style={{ color: '#6b7280', marginBottom: '8px' }}>
                     <strong>السبب:</strong> {vacation.reason}
                   </p>
@@ -643,7 +808,8 @@ function VacationHistory() {
                   </button>
                 </div>
               </div>
-            ))
+            );
+            })
           )}
         </div>
       </div>
@@ -928,6 +1094,7 @@ function VacationHistory() {
                 <option value="عارضة">عارضة</option>
                 <option value="مأمورية">مأمورية</option>
                 <option value="مرضية">مرضية</option>
+                <option value="إذن">إذن</option>
               </select>
             </div>
 
@@ -1001,6 +1168,12 @@ function VacationHistory() {
                     <option value="تمت المأمورية">تمت المأمورية</option>
                     <option value="مستمرة المأمورية">مستمرة المأمورية</option>
                     <option value="لم تبدأ المأمورية">لم تبدأ المأمورية</option>
+                  </>
+                ) : editingVacation.vacationType === 'مرضية' ? (
+                  <>
+                    <option value="تمت الإجازة المرضية">تمت الإجازة المرضية</option>
+                    <option value="مستمرة الإجازة المرضية">مستمرة الإجازة المرضية</option>
+                    <option value="لم تبدأ الإجازة المرضية">لم تبدأ الإجازة المرضية</option>
                   </>
                 ) : (
                   <>

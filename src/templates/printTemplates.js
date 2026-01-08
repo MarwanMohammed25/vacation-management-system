@@ -635,11 +635,13 @@ export const VacationHistoryTemplate = (vacation, toArabicNumerals, employeeVaca
   const casualVacations = employeeVacations.filter(v => v.vacationType === 'عارضة');
   const sickVacations = employeeVacations.filter(v => v.vacationType === 'مرضية');
   const missionVacations = employeeVacations.filter(v => v.vacationType === 'مأمورية');
+  const permissionVacations = employeeVacations.filter(v => v.vacationType === 'إذن');
   
   const regularDays = regularVacations.reduce((sum, v) => sum + v.days, 0);
   const casualDays = casualVacations.reduce((sum, v) => sum + v.days, 0);
   const sickDays = sickVacations.reduce((sum, v) => sum + v.days, 0);
   const missionDays = missionVacations.reduce((sum, v) => sum + v.days, 0);
+  const permissionCount = permissionVacations.length;
   
   // دالة للتحقق من حالة الإجازة
   const getVacationStatus = (vac) => {
@@ -656,9 +658,23 @@ export const VacationHistoryTemplate = (vacation, toArabicNumerals, employeeVaca
     
     // نصوص مختلفة حسب نوع الإجازة
     const isMission = vac.vacationType === 'مأمورية';
-    const completedText = isMission ? 'تمت المأمورية' : 'تمت الإجازة';
-    const ongoingText = isMission ? 'مستمرة المأمورية' : 'مستمرة الإجازة';
-    const notStartedText = isMission ? 'لم تبدأ المأمورية' : 'لم تبدأ';
+    const isSick = vac.vacationType === 'مرضية';
+    const isPermission = vac.vacationType === 'إذن';
+    
+    const completedText = isMission ? 'تمت المأمورية' : 
+                         isSick ? 'تمت الإجازة المرضية' : 
+                         isPermission ? 'تم الحضور' : 
+                         'تمت الإجازة';
+    
+    const ongoingText = isMission ? 'مستمرة المأمورية' : 
+                       isSick ? 'مستمرة الإجازة المرضية' : 
+                       isPermission ? 'جاري الإذن' : 
+                       'مستمرة الإجازة';
+    
+    const notStartedText = isMission ? 'لم تبدأ المأمورية' : 
+                          isSick ? 'لم تبدأ الإجازة المرضية' : 
+                          isPermission ? 'لم يتم الحضور' : 
+                          'لم تبدأ';
     
     if (end < today) {
       return completedText;
@@ -911,12 +927,16 @@ ${!isFirstPage ? '<div style="page-break-before: always;"></div>' : ''}
                 <span>${toArabicNumerals(vacation.casualVacation || 0)} يوم</span>
             </div>
             <div class="balance-row">
-                <span>إجازة مرضية (مستخدم):</span>
+                <span>إجازة مرضية:</span>
                 <span>${toArabicNumerals(vacation.sickVacation || 0)} يوم</span>
             </div>
             <div class="balance-row">
-                <span>مأمورية (مستخدم):</span>
+                <span>مأمورية:</span>
                 <span>${toArabicNumerals(vacation.missionVacation || 0)} يوم</span>
+            </div>
+            <div class="balance-row">
+                <span>إذن:</span>
+                <span>${toArabicNumerals(permissionCount || 0)} طلب</span>
             </div>
         </div>
     </div>
@@ -925,22 +945,23 @@ ${!isFirstPage ? '<div style="page-break-before: always;"></div>' : ''}
     <table class="history-table">
         <thead>
             <tr>
-                <th style="width: 5%;">م</th>
-                <th style="width: 12%;">النوع</th>
-                <th style="width: 11%;">من</th>
-                <th style="width: 11%;">إلى</th>
-                <th style="width: 7%;">الأيام</th>
-                <th style="width: 14%;">حالة الإجازة</th>
+                <th style="width: 8%;">م</th>
+                <th style="width: 15%;">النوع</th>
+                <th style="width: ${employeeVacations.some(v => v.vacationType !== 'إذن') ? '12%' : '0%'}; ${employeeVacations.some(v => v.vacationType !== 'إذن') ? '' : 'display: none;'}">من</th>
+                <th style="width: ${employeeVacations.some(v => v.vacationType !== 'إذن') ? '12%' : '0%'}; ${employeeVacations.some(v => v.vacationType !== 'إذن') ? '' : 'display: none;'}">إلى</th>
+                <th style="width: 15%;">اليوم</th>
+                <th style="width: 15%;">المدة</th>
+                <th style="width: 15%;">الحالة</th>
                 <th style="width: 20%;">السبب</th>
-                <th style="width: 6%;">مرفق</th>
-                <th style="width: 14%;">تاريخ التقديم</th>
+                <th style="width: ${employeeVacations.some(v => v.vacationType !== 'إذن') ? '8%' : '0%'}; ${employeeVacations.some(v => v.vacationType !== 'إذن') ? '' : 'display: none;'}">مرفق</th>
+                <th style="width: ${employeeVacations.some(v => v.vacationType !== 'إذن') ? '12%' : '0%'}; ${employeeVacations.some(v => v.vacationType !== 'إذن') ? '' : 'display: none;'}">تاريخ التقديم</th>
             </tr>
         </thead>
         <tbody>
             ${employeeVacations.map((vac, index) => {
               const status = getVacationStatus(vac);
-              const statusClass = (status === 'مستمرة الإجازة' || status === 'مستمرة المأمورية') ? 'status-active' : 
-                                 (status === 'تمت الإجازة' || status === 'تمت المأمورية') ? 'status-ended' : 
+              const statusClass = (status === 'مستمرة الإجازة' || status === 'مستمرة المأمورية' || status === 'جاري الإذن') ? 'status-active' : 
+                                 (status === 'تمت الإجازة' || status === 'تمت المأمورية' || status === 'تم الإذن') ? 'status-ended' : 
                                  status === 'تمت جزء من الإجازة' ? 'status-partial' : 'status-pending';
               
               // عرض تاريخ الانتهاء الفعلي إذا كانت الإجازة جزئية
@@ -948,17 +969,33 @@ ${!isFirstPage ? '<div style="page-break-before: always;"></div>' : ''}
                 ? `${toArabicNumerals(vac.actualEndDate)} (فعلي)`
                 : toArabicNumerals(vac.endDate);
               
+              const isPermission = vac.vacationType === 'إذن';
+              const hideForPermission = isPermission ? 'display: none;' : '';
+              
+              // دالة لتحويل التاريخ إلى اسم اليوم بالعربية
+              const getDayName = (dateStr) => {
+                if (!dateStr) return '';
+                const date = new Date(dateStr);
+                const days = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+                return days[date.getDay()];
+              };
+              
+              const dayWithDate = isPermission 
+                ? `${getDayName(vac.permissionDate || vac.startDate)} ${toArabicNumerals(vac.permissionDate || vac.startDate)}`
+                : toArabicNumerals(vac.days);
+              
               return `
             <tr>
                 <td>${toArabicNumerals(index + 1)}</td>
                 <td>${vac.vacationType}</td>
-                <td>${toArabicNumerals(vac.startDate)}</td>
-                <td>${endDateDisplay}</td>
-                <td>${toArabicNumerals(vac.days)}</td>
+                <td style="${hideForPermission}">${toArabicNumerals(vac.startDate)}</td>
+                <td style="${hideForPermission}">${endDateDisplay}</td>
+                <td>${dayWithDate}</td>
+                <td>${isPermission && vac.duration ? vac.duration : (isPermission ? '-' : '-')}</td>
                 <td class="${statusClass}">${status}</td>
                 <td>${vac.reason || '-'}</td>
-                <td>${vac.attachmentBase64 ? '✓' : '-'}</td>
-                <td>${toArabicNumerals(vac.requestDate)}</td>
+                <td style="${hideForPermission}">${vac.attachmentBase64 ? '✓' : '-'}</td>
+                <td style="${hideForPermission}">${toArabicNumerals(vac.requestDate)}</td>
             </tr>
             `;
             }).join('')}
@@ -1020,6 +1057,19 @@ ${!isFirstPage ? '<div style="page-break-before: always;"></div>' : ''}
                     </div>
                 </div>
             </div>
+            <div class="stat-card">
+                <div class="stat-type">إذن</div>
+                <div class="stat-numbers">
+                    <div class="stat-item">
+                        <div class="stat-label">عدد</div>
+                        <div class="stat-value">${toArabicNumerals(permissionVacations.length)}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">طلبات</div>
+                        <div class="stat-value">${toArabicNumerals(permissionCount)}</div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     ` : `
@@ -1030,6 +1080,305 @@ ${!isFirstPage ? '<div style="page-break-before: always;"></div>' : ''}
 </div>
 `;
 };
+
+// قالب طلب إذن
+export const PermissionTemplate = (vacation, toArabicNumerals) => `
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>طلب إذن</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        @page {
+            margin: 0;
+            size: A4;
+        }
+
+        body {
+            font-family: 'Arial', 'Traditional Arabic', sans-serif;
+            padding: 20px;
+            direction: rtl;
+            position: relative;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .background-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .background-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+
+        @media print {
+            @page {
+                margin: 0;
+            }
+
+            body {
+                padding: 20px;
+            }
+
+            .background-wrapper {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 297mm;
+                max-height: 297mm;
+                z-index: -1;
+            }
+
+            .background-wrapper img {
+                width: 100%;
+                height: 297mm;
+                max-height: 297mm;
+                object-fit: cover;
+                object-position: center;
+            }
+
+            .container {
+                page-break-inside: avoid;
+                page-break-after: always;
+            }
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 60px auto 0;
+            background-color: transparent;
+            padding: 20px 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .header h1 {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 26px;
+            margin-bottom: 8px;
+            box-shadow: 0 4px 6px rgba(139, 92, 246, 0.2);
+        }
+
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .info-card {
+            background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+            padding: 15px 20px;
+            border-radius: 8px;
+            border: 2px solid #8b5cf6;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .info-card label {
+            display: block;
+            color: #8b5cf6;
+            font-weight: bold;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .info-card span {
+            display: block;
+            color: #333;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .time-section {
+            background: linear-gradient(135deg, #f0e7ff 0%, #e9d8fd 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 2px solid #8b5cf6;
+        }
+
+        .time-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .time-item {
+            text-align: center;
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .time-item label {
+            display: block;
+            color: #8b5cf6;
+            font-weight: bold;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .time-item span {
+            display: block;
+            color: #333;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .reason-section {
+            background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border: 2px solid #8b5cf6;
+        }
+
+        .reason-section label {
+            display: block;
+            color: #8b5cf6;
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .reason-section p {
+            color: #333;
+            font-size: 15px;
+            line-height: 1.8;
+            min-height: 80px;
+        }
+
+        .signatures {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 50px;
+        }
+
+        .signature-box {
+            text-align: center;
+            width: 45%;
+        }
+
+        .signature-box p {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 60px;
+        }
+
+        .signature-line {
+            border-top: 2px solid #333;
+            margin-top: 10px;
+            padding-top: 8px;
+        }
+
+        .signature-line span {
+            color: #666;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="background-wrapper">
+        <img src="${companyWatermarkBase64}" alt="Watermark">
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>📋 طلب إذن</h1>
+            <p>نموذج طلب إذن لساعات محددة</p>
+        </div>
+
+        <div class="info-grid">
+            <div class="info-card">
+                <label>اسم الموظف</label>
+                <span>${vacation.employeeName || ''}</span>
+            </div>
+            <div class="info-card">
+                <label>الوظيفة</label>
+                <span>${vacation.position || ''}</span>
+            </div>
+            <div class="info-card">
+                <label>القسم</label>
+                <span>${vacation.department || ''}</span>
+            </div>
+            <div class="info-card">
+                <label>تاريخ الإذن</label>
+                <span>${toArabicNumerals(vacation.permissionDate || vacation.startDate || '')}</span>
+            </div>
+        </div>
+
+        <div class="time-section">
+            <h3 style="color: #8b5cf6; margin-bottom: 10px;">⏰ توقيت الإذن</h3>
+            <div class="time-grid">
+                <div class="time-item">
+                    <label>من الساعة</label>
+                    <span>${vacation.startTime || 'غير محدد'}</span>
+                </div>
+                <div class="time-item">
+                    <label>إلى الساعة</label>
+                    <span>${vacation.endTime || 'غير محدد'}</span>
+                </div>
+                <div class="time-item">
+                    <label>المدة</label>
+                    <span>${vacation.duration || 'غير محدد'}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="reason-section">
+            <label>سبب طلب الإذن</label>
+            <p>${vacation.reason || 'لا يوجد سبب محدد'}</p>
+        </div>
+
+        <div class="signatures">
+            <div class="signature-box">
+                <p>توقيع الموظف</p>
+                <div class="signature-line">
+                    <span>التاريخ: ${toArabicNumerals(vacation.requestDate || '')}</span>
+                </div>
+            </div>
+            <div class="signature-box">
+                <p>اعتماد الإدارة</p>
+                <div class="signature-line">
+                    <span>التاريخ: _______________</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+`;
 
 // قالب صفحة الصورة المرفقة - صفحة ثانية (بدون معلومات)
 export const AttachmentPageTemplate = (vacation, toArabicNumerals) => {

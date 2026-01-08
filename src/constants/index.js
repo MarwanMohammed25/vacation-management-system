@@ -4,21 +4,24 @@ export const VACATION_TYPES = {
   REGULAR: 'اعتيادي',
   CASUAL: 'عارضة',
   MISSION: 'مأمورية',
-  SICK: 'مرضية'
+  SICK: 'مرضية',
+  PERMISSION: 'إذن'
 };
 
 export const DEFAULT_VACATION_DAYS = {
   REGULAR: 15,
   CASUAL: 6,
   MISSION: Infinity,
-  SICK: Infinity
+  SICK: Infinity,
+  PERMISSION: Infinity
 };
 
 export const VACATION_ICONS = {
   [VACATION_TYPES.REGULAR]: '🏖️',
   [VACATION_TYPES.CASUAL]: '⚡',
   [VACATION_TYPES.MISSION]: '💼',
-  [VACATION_TYPES.SICK]: '🏥'
+  [VACATION_TYPES.SICK]: '🏥',
+  [VACATION_TYPES.PERMISSION]: '📋'
 };
 
 export const MESSAGES = {

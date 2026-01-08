@@ -13,6 +13,7 @@ function Employees() {
   const [employees, setEmployees] = useState([]);
   const [vacations, setVacations] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [vacationFilter, setVacationFilter] = useState(null);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState(null);
   const [formData, setFormData] = useState({
@@ -144,11 +145,12 @@ function Employees() {
 
   const getEmployeeVacations = (employeeId) => {
     return vacations.filter(v => v.employeeId === employeeId)
-      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
   };
 
-  const handleViewVacations = (employee) => {
+  const handleViewVacations = (employee, filterType = null) => {
     setSelectedEmployee(employee);
+    setVacationFilter(filterType);
   };
 
   const handleDeleteVacation = async (vacation) => {
@@ -624,35 +626,68 @@ function Employees() {
               <tr>
                 <th>الاسم</th>
                 <th>الوظيفة</th>
-                <th>القسم</th>
+                <th>جهة العمل</th>
                 <th>إجازة اعتيادية</th>
                 <th>إجازة عارضة</th>
+                <th>المأموريات</th>
+                <th>المرضية</th>
+                <th>الإذن</th>
                 <th>الإجراءات</th>
               </tr>
             </thead>
             <tbody>
               {employees.length === 0 ? (
                 <tr>
-                  <td colSpan="6" style={{ textAlign: 'center', padding: '20px' }}>
+                  <td colSpan="9" style={{ textAlign: 'center', padding: '20px' }}>
                     لا توجد بيانات
                   </td>
                 </tr>
               ) : (
-                employees.map(employee => (
+                employees.map(employee => {
+                  const employeeVacations = getEmployeeVacations(employee.id);
+                  const missionDays = employeeVacations.filter(v => v.vacationType === 'مأمورية').reduce((sum, v) => sum + v.days, 0);
+                  const sickDays = employeeVacations.filter(v => v.vacationType === 'مرضية').reduce((sum, v) => sum + v.days, 0);
+                  const permissionCount = employeeVacations.filter(v => v.vacationType === 'إذن').length;
+                  
+                  return (
                   <tr key={employee.id}>
                     <td>{employee.name}</td>
                     <td>{employee.position}</td>
                     <td>{employee.department}</td>
                     <td>{employee.regularVacation} يوم</td>
                     <td>{employee.casualVacation} يوم</td>
+                    <td>{missionDays} يوم</td>
+                    <td>{sickDays} يوم</td>
+                    <td>{permissionCount} طلب</td>
                     <td>
                       <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                         <button 
                           className="btn btn-success"
-                          onClick={() => handleViewVacations(employee)}
+                          onClick={() => handleViewVacations(employee, 'vacations')}
                           style={{ padding: '5px 15px', fontSize: '14px' }}
                         >
-                          الإجازات ({getEmployeeVacations(employee.id).length})
+                          الإجازات
+                        </button>
+                        <button 
+                          className="btn"
+                          onClick={() => handleViewVacations(employee, 'missions')}
+                          style={{ padding: '5px 15px', fontSize: '14px', background: '#10b981', color: 'white' }}
+                        >
+                          المأموريات
+                        </button>
+                        <button 
+                          className="btn"
+                          onClick={() => handleViewVacations(employee, 'sick')}
+                          style={{ padding: '5px 15px', fontSize: '14px', background: '#f59e0b', color: 'white' }}
+                        >
+                          المرضية
+                        </button>
+                        <button 
+                          className="btn"
+                          onClick={() => handleViewVacations(employee, 'permissions')}
+                          style={{ padding: '5px 15px', fontSize: '14px', background: '#8b5cf6', color: 'white' }}
+                        >
+                          الأذونات
                         </button>
                         <button 
                           className="btn btn-secondary"
@@ -671,7 +706,8 @@ function Employees() {
                       </div>
                     </td>
                   </tr>
-                ))
+                  );
+                })
               )}
             </tbody>
           </table>
@@ -709,7 +745,10 @@ function Employees() {
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
               <h2 style={{ color: '#374151', margin: 0 }}>
-                إجازات الموظف: {selectedEmployee.name}
+                {vacationFilter === 'missions' ? 'مأموريات الموظف/ة' :
+                 vacationFilter === 'sick' ? 'الإجازات المرضية للموظف/ة' :
+                 vacationFilter === 'permissions' ? 'أذونات الموظف/ة' :
+                 'إجازات الموظف/ة'}: {selectedEmployee.name}
               </h2>
               <button 
                 className="btn btn-secondary"
@@ -737,7 +776,18 @@ function Employees() {
               </div>
             </div>
 
-            {getEmployeeVacations(selectedEmployee.id).length === 0 ? (
+            {(() => {
+              const filteredVacations = vacationFilter 
+                ? getEmployeeVacations(selectedEmployee.id).filter(v => {
+                    if (vacationFilter === 'vacations') return v.vacationType === 'اعتيادي' || v.vacationType === 'عارضة';
+                    if (vacationFilter === 'missions') return v.vacationType === 'مأمورية';
+                    if (vacationFilter === 'sick') return v.vacationType === 'مرضية';
+                    if (vacationFilter === 'permissions') return v.vacationType === 'إذن';
+                    return true;
+                  })
+                : getEmployeeVacations(selectedEmployee.id);
+              
+              return filteredVacations.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '40px', color: '#9ca3af' }}>
                 <p style={{ fontSize: '18px' }}>لا توجد إجازات مسجلة لهذا الموظف</p>
               </div>
@@ -757,7 +807,7 @@ function Employees() {
                     </tr>
                   </thead>
                   <tbody>
-                    {getEmployeeVacations(selectedEmployee.id).map(vacation => (
+                    {filteredVacations.map(vacation => (
                       <tr key={vacation.id}>
                         <td style={{ fontWeight: 'bold' }}>{vacation.vacationType}</td>
                         <td>{vacation.startDate}</td>
@@ -809,7 +859,8 @@ function Employees() {
                   </tbody>
                 </table>
               </div>
-            )}
+            );
+            })()}
 
             {/* Summary Statistics */}
             {getEmployeeVacations(selectedEmployee.id).length > 0 && (
